@@ -23,6 +23,7 @@ export interface AxiosRequestConfig {
   params?: any; // get、head 等类型请求的数据，拼接到 url 的 query string 中
   headers?: any; // 请求头
   responseType?: XMLHttpRequestResponseType; // 指定响应的数据类型，通过设置 XMLHttpRequest 对象的 responseType 属性。一个 XMLHttpRequestResponseType 类型，定义是 "" | "arraybuffer" | "blob" | "document" | "json" | "text" 字符串字面量类型
+  timeout?: number; // 超时时间
 }
 
 // 定义 AxiosResponse 接口类型
@@ -36,3 +37,12 @@ export interface AxiosResponse {
 }
 
 export interface AxiosPromise extends Promise<AxiosResponse> {}
+
+// 定义 AxiosError 类型接口，用于外部使用。继承与 Error 类
+export interface AxiosError extends Error {
+  config: AxiosRequestConfig; // 请求对象配置
+  code?: string; // 错误代码
+  request?: any; // XMLHttpRequest 对象实例
+  response?: AxiosResponse; // 自定义响应对象 response
+  isAxiosError: boolean;
+}

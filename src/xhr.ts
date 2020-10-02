@@ -1,15 +1,21 @@
 import { parseHeaders } from './helpers/headers';
+import { createError } from './helpers/error';
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types/index';
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
-  return new Promise(resolve => {
-    const { data = null, url, method = 'get', headers, responseType } = config;
+  return new Promise((resolve, reject) => {
+    const { data = null, url, method = 'get', headers, responseType, timeout } = config;
     // 初始化一个 XMLHttpRequest 实例对象
     const request = new XMLHttpRequest();
 
     if (responseType) {
       // 一个用于定义响应类型的枚举值：""（空值）、arraybuffer、blob、document、json、text、ms-stream
       request.responseType = responseType;
+    }
+
+    if (timeout) {
+      // 设置超时
+      request.timeout = timeout;
     }
 
     // 初始化一个请求
@@ -25,6 +31,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     // 4 - DONE - 请求操作已经完成。这意味着数据传输已经彻底完成或失败
     request.onreadystatechange = function handleLoad() {
       if (request.readyState !== 4) return;
+      if (request.status === 0) return;
 
       // parseHeaders：对于 XMLHttpRequest 对象的 getAllResponseHeaders 方法获取到的字符串类型响应头进行处理，解析成为一个对象结构
       // XMLHttpRequest.getAllResponseHeaders()
@@ -39,7 +46,20 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         config,
         request,
       };
-      resolve(response);
+      // 处理响应数据
+      handleResponse(response);
+    };
+
+    // 当 request 遭遇错误时触发
+    request.onerror = function handleError() {
+      reject(createError('Network Error', config, null, request));
+    };
+
+    // 当在预设时间内没有接收到响应时触发。
+    request.ontimeout = function handleTimeout() {
+      reject(
+        createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request),
+      );
     };
 
     Object.keys(headers).forEach(name => {
@@ -54,5 +74,21 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     // 发送请求
     request.send(data);
+
+    function handleResponse(response: AxiosResponse): void {
+      if (request.status >= 200 && response.status < 300) {
+        resolve(response);
+      } else {
+        reject(
+          createError(
+            `Request failed with status code ${response.status}`,
+            config,
+            null,
+            request,
+            response,
+          ),
+        );
+      }
+    }
   });
 }
