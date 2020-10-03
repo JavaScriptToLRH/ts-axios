@@ -81,6 +81,11 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
 }
 
+export interface AxiosStatic extends AxiosInstance {
+  // 接受一个 AxiosRequestConfig 类型的配置，作为默认配置的扩展，也可以接受不传参数
+  create(config?: AxiosRequestConfig): AxiosInstance;
+}
+
 // 定义拦截器 AxiosInterceptorManager 泛型接口
 export interface AxiosInterceptorManager<T> {
   // 添加拦截器到 interceptors 中，并返回一个 id 用于删除
