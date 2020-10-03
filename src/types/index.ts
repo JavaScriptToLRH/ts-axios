@@ -24,8 +24,14 @@ export interface AxiosRequestConfig {
   headers?: any; // 请求头
   responseType?: XMLHttpRequestResponseType; // 指定响应的数据类型，通过设置 XMLHttpRequest 对象的 responseType 属性。一个 XMLHttpRequestResponseType 类型，定义是 "" | "arraybuffer" | "blob" | "document" | "json" | "text" 字符串字面量类型
   timeout?: number; // 超时时间
+  transformRequest?: AxiosTransformer | AxiosTransformer[];
+  transformResponse?: AxiosTransformer | AxiosTransformer[];
 
   [propName: string]: any;
+}
+
+export interface AxiosTransformer {
+  (data: any, headers?: any): any;
 }
 
 // 定义 AxiosResponse 接口类型。T=any 表示泛型的类型参数默认值为 any
