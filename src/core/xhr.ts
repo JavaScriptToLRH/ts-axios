@@ -4,7 +4,15 @@ import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { data = null, url, method = 'get', headers, responseType, timeout } = config;
+    const {
+      data = null,
+      url,
+      method = 'get',
+      headers,
+      responseType,
+      timeout,
+      cancelToken,
+    } = config;
     // 初始化一个 XMLHttpRequest 实例对象
     const request = new XMLHttpRequest();
 
@@ -71,6 +79,14 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         request.setRequestHeader(name, headers[name]);
       }
     });
+
+    // 取消请求逻辑
+    if (cancelToken) {
+      cancelToken.promise.then(reason => {
+        request.abort();
+        reject(reason);
+      });
+    }
 
     // 发送请求
     request.send(data);

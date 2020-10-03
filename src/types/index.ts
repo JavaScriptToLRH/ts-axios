@@ -26,6 +26,7 @@ export interface AxiosRequestConfig {
   timeout?: number; // 超时时间
   transformRequest?: AxiosTransformer | AxiosTransformer[];
   transformResponse?: AxiosTransformer | AxiosTransformer[];
+  cancelToken?: CancelToken;
 
   [propName: string]: any;
 }
@@ -84,6 +85,10 @@ export interface AxiosInstance extends Axios {
 export interface AxiosStatic extends AxiosInstance {
   // 接受一个 AxiosRequestConfig 类型的配置，作为默认配置的扩展，也可以接受不传参数
   create(config?: AxiosRequestConfig): AxiosInstance;
+
+  CancelToken: CancelTokenStatic;
+  Cancel: CancelStatic;
+  isCancel: (value: any) => boolean;
 }
 
 // 定义拦截器 AxiosInterceptorManager 泛型接口
@@ -102,4 +107,44 @@ export interface ResolvedFn<T> {
 
 export interface RejectedFn {
   (error: any): any;
+}
+
+// 实例类型的接口定义
+export interface CancelToken {
+  promise: Promise<Cancel>;
+  reason?: Cancel;
+
+  throwIfRequested(): void;
+}
+
+// 请求取消方法的接口定义
+export interface Canceler {
+  (message?: string): void;
+}
+
+// CancelToken 类构造函数参数的接口定义
+export interface CancelExecutor {
+  (cancel: Canceler): void;
+}
+
+// CancelTokenSource 作为 CancelToken 类静态方法 source 函数的返回值类型
+export interface CancelTokenSource {
+  token: CancelToken;
+  cancel: Canceler;
+}
+
+// CancelTokenStatic 则作为 CancelToken 类的类类型
+export interface CancelTokenStatic {
+  new (executor: CancelExecutor): CancelToken;
+  source(): CancelTokenSource;
+}
+
+// 定义实例类型的接口
+export interface Cancel {
+  message?: string;
+}
+
+// CancelStatic 是类类型的接口定义
+export interface CancelStatic {
+  new (message?: string): Cancel;
 }
