@@ -68,6 +68,25 @@ export interface Axios {
 
 // 混合类型的接口，继承于 Axios
 export interface AxiosInstance extends Axios {
+  // 函数重载
   <T = any>(config: AxiosRequestConfig): AxiosPromise<T>;
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
+}
+
+// 定义拦截器 AxiosInterceptorManager 泛型接口
+export interface AxiosInterceptorManager<T> {
+  // 添加拦截器到 interceptors 中，并返回一个 id 用于删除
+  use(resolved: ResolvedFn<T>, rejected?: RejectedFn): number;
+
+  // 删除一个拦截器，通过传入拦截器的 id 删除
+  eject(id: number): void;
+}
+
+// 对于 resolve 函数的参数，请求拦截器和响应拦截器是不同的
+export interface ResolvedFn<T> {
+  (val: T): T | Promise<T>;
+}
+
+export interface RejectedFn {
+  (error: any): any;
 }
