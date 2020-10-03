@@ -1,6 +1,6 @@
-import { parseHeaders } from './helpers/headers';
-import { createError } from './helpers/error';
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types/index';
+import { parseHeaders } from '../helpers/headers';
+import { createError } from '../helpers/error';
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index';
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -19,7 +19,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     // 初始化一个请求
-    request.open(method.toUpperCase(), url, true);
+    request.open(method.toUpperCase(), url!, true);
 
     // onreadystatechange：当 readyState 属性发生变化时，调用 EventHandler
     // XMLHttpRequest.readyState 属性返回一个 XMLHttpRequest 代理当前所处的状态。

@@ -1,43 +1,20 @@
-import { AxiosPromise, AxiosRequestConfig, AxiosResponse } from './types/index';
-import xhr from './xhr';
-import { buildURL } from './helpers/url';
-import { transformRequest, transformResponse } from './helpers/data';
-import { processHeaders } from './helpers/headers';
+import { AxiosInstance } from './types';
+import Axios from './core/Axios';
+import { extend } from './helpers/util';
 
-function axios(config: AxiosRequestConfig): AxiosPromise {
-  processConfig(config);
-  return xhr(config).then(res => {
-    return transformResponseData(res);
-  });
+// 使用工厂模式创建 axios 混合对象
+function createInstance(): AxiosInstance {
+  const context = new Axios();
+  // instance 本身是一个函数，拥有 Axios 类的所有原型和实例属性
+  const instance = Axios.prototype.request.bind(context);
+
+  // 将 context 中的原型方法和实例方法拷贝到 instance 上
+  extend(instance, context);
+
+  // typescript 不能正确推断 instance 的类型，所以断言成 AxiosInstance 类型
+  return instance as AxiosInstance;
 }
 
-function processConfig(config: AxiosRequestConfig): void {
-  config.url = transformURL(config);
-  config.headers = transformHeaders(config);
-  config.data = transformRequestData(config);
-}
-
-// 处理 URL 参数
-function transformURL(config: AxiosRequestConfig): string {
-  const { url, params } = config;
-  return buildURL(url, params);
-}
-
-// 转换请求 body 的数据
-function transformRequestData(config: AxiosRequestConfig): any {
-  return transformRequest(config.data);
-}
-
-// 对 request 的 headers 进行一层加工：header 属性名进行规范化处理，设置默认 Content-Type
-function transformHeaders(config: AxiosRequestConfig): any {
-  const { headers = {}, data } = config;
-  return processHeaders(headers, data);
-}
-
-// 转换为 JSON 对象。在不设置 responseType 的情况下，服务端返回的数据是字符串类型
-function transformResponseData(res: AxiosResponse): AxiosResponse {
-  res.data = transformResponse(res.data);
-  return res;
-}
+const axios = createInstance();
 
 export default axios;
