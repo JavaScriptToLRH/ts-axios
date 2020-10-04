@@ -20,6 +20,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       xsrfHeaderName,
       onDownloadProgress,
       onUploadProgress,
+      auth,
     } = config;
 
     // 1.创建一个 request 实例：初始化一个 XMLHttpRequest 实例对象
@@ -110,11 +111,18 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         delete headers['Content-Type'];
       }
 
+      // 用于指定跨域 Access-Control 请求带有授权信息
       if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
         const xsrfValue = cookie.read(xsrfCookieName);
         if (xsrfValue) {
           headers[xsrfHeaderName!] = xsrfValue;
         }
+      }
+
+      if (auth) {
+        // HTTP 协议中的 Authorization 请求 header 会包含服务器用于验证用户代理身份的凭证
+        // 通常会在服务器返回 401 Unauthorized 状态码以及 WWW-Authenticate 消息头之后在后续请求中发送此消息头。
+        headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password);
       }
 
       Object.keys(headers).forEach(name => {

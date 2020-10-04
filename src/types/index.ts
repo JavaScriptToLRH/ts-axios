@@ -32,6 +32,7 @@ export interface AxiosRequestConfig {
   xsrfHeaderName?: string; // 请求 headers 中 token 对的 headers 名称
   onDownloadProgress?: (e: ProgressEvent) => void; // 对下载进度进行监控
   onUploadProgress?: (e: ProgressEvent) => void; // 对上传进度进行监控
+  auth?: AxiosBasicCredentials; // 用于验证用户代理身份的凭证
 
   [propName: string]: any;
 }
@@ -152,4 +153,9 @@ export interface Cancel {
 // CancelStatic 是类类型的接口定义
 export interface CancelStatic {
   new (message?: string): Cancel;
+}
+
+export interface AxiosBasicCredentials {
+  username: string;
+  password: string;
 }
