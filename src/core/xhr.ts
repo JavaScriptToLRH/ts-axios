@@ -12,6 +12,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       responseType,
       timeout,
       cancelToken,
+      withCredentials,
     } = config;
     // 初始化一个 XMLHttpRequest 实例对象
     const request = new XMLHttpRequest();
@@ -24,6 +25,11 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     if (timeout) {
       // 设置超时
       request.timeout = timeout;
+    }
+
+    if (withCredentials) {
+      // 用于指定跨域 Access-Control 请求是否应当带有授权信息
+      request.withCredentials = withCredentials;
     }
 
     // 初始化一个请求
