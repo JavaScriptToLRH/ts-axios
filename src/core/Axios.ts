@@ -44,6 +44,9 @@ export default class Axios {
       config = url;
     }
 
+    config = mergeConfig(this.defaults, config);
+    config.method = config.method.toLowerCase();
+
     // 链式调用。拦截器执行顺序为：
     // 对于请求拦截器，先执行后添加的，再执行先添加的
     // 对于响应连接器，先执行先添加的，在执行后添加的

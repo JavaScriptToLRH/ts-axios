@@ -6,17 +6,17 @@ export function isDate(val: any): val is Date {
 }
 
 // 是否为 Object 类型，对于 FormData、ArrayBuffer 这些类型，isObject 判断为 true
-export function isObject(val: any): val is Object {
-  return val !== null && typeof val === 'object';
-}
+// export function isObject(val: any): val is Object {
+//   return val !== null && typeof val === 'object';
+// }
 
 // 是否为 Object 类型，用于判断普通 Object 类型
 export function isPlainObject(val: any): val is Object {
-  return toString.call(val) === '[object, object]';
+  return toString.call(val) === '[object Object]';
 }
 
 // 是否为 FormData 类型
-export function isFormData(val: any): boolean {
+export function isFormData(val: any): val is FormData {
   return typeof val !== 'undefined' && val instanceof FormData;
 }
 
@@ -43,7 +43,7 @@ export function deepMerge(...objs: any[]): any {
           if (isPlainObject(result[key])) {
             result[key] = deepMerge(result[key], val);
           } else {
-            result[key] = deepMerge({}, val);
+            result[key] = deepMerge(val);
           }
         } else {
           result[key] = val;

@@ -67,6 +67,11 @@ export interface AxiosError extends Error {
 
 // 定义一个 Axios 类型接口，描述 Axios 类中的公用方法
 export interface Axios {
+  defaults: AxiosRequestConfig;
+  interceptors: {
+    request: AxiosInterceptorManager<AxiosRequestConfig>;
+    response: AxiosInterceptorManager<AxiosResponse>;
+  };
   request<T = any>(config: AxiosRequestConfig): AxiosPromise<T>;
   // GET方法请求一个指定资源的表示形式. 使用GET的请求应该只被用于获取数据
   get<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
@@ -77,11 +82,11 @@ export interface Axios {
   // OPTIONS方法用于描述目标资源的通信选项
   options<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
   // POST方法用于将实体提交到指定的资源，通常导致在服务器上的状态变化或副作用
-  post<T = any>(url: string, data: any, config?: AxiosRequestConfig): AxiosPromise<T>;
+  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>;
   // PUT方法用请求有效载荷替换目标资源的所有当前表示
-  put<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
+  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>;
   // PATCH方法用于对资源应用部分修改
-  patch<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
+  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T>;
   getUri(config?: AxiosRequestConfig): string;
 }
 

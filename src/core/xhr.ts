@@ -10,8 +10,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     const {
       data = null,
       url,
-      method = 'get',
-      headers,
+      method,
+      headers = {},
       responseType,
       timeout,
       cancelToken,
@@ -27,7 +27,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     // 1.创建一个 request 实例：初始化一个 XMLHttpRequest 实例对象
     const request = new XMLHttpRequest();
     // 2.初始化一个请求
-    request.open(method.toUpperCase(), url!, true);
+    request.open(method!.toUpperCase(), url!, true);
     // 3.配置 reques 对象
     configureRequest();
     // 4.给 request 添加事件处理函数
@@ -73,7 +73,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         // XMLHttpRequest.getAllResponseHeaders()
         // 以字符串的形式返回所有用 CRLF 分隔的响应头，如果没有收到响应，则返回 null
         const responseHeaders = parseHeaders(request.getAllResponseHeaders());
-        const responseData = responseType !== 'text' ? request.response : request.responseText;
+        const responseData =
+          responseType && responseType !== 'text' ? request.response : request.responseText;
         const response: AxiosResponse = {
           data: responseData,
           status: request.status,
@@ -140,10 +141,17 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     function processCancel(): void {
       // 取消请求逻辑
       if (cancelToken) {
-        cancelToken.promise.then(reason => {
-          request.abort();
-          reject(reason);
-        });
+        cancelToken.promise
+          .then(reason => {
+            request.abort();
+            reject(reason);
+          })
+          .catch(
+            /* istanbul ignore next */
+            () => {
+              // do nothing
+            },
+          );
       }
     }
 
