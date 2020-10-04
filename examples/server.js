@@ -1,18 +1,9 @@
 const express = require('express');
-// body-parser 是一个HTTP请求体解析中间件，使用这个模块可以解析JSON、Raw、文本、URL-encoded格式的请求体
 const bodyParser = require('body-parser');
-// cookie-parser 用来实现cookie的解析
 const cookieParser = require('cookie-parser');
-// connect-multiparty 实现文件上传(文件接收)
 const multipart = require('connect-multiparty');
-// atob 对字符串进行 base64 转换和解析
 const atob = require('atob');
 const webpack = require('webpack');
-// webpack-dev-middleware 生成一个与 webpack 的 compiler 绑定的中间件，然后在 express 启动的服务 app 中调用这个中间件。
-// 中间件作用如下：
-// > 通过watch mode，监听资源的变更，自动打包（如何实现，见下文详解)
-// > 快速编译，走内存
-// > 返回中间件，支持express的use格式。
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const WebpackConfig = require('./webpack.config');
@@ -25,8 +16,8 @@ const compiler = webpack(WebpackConfig);
 
 app.use(
   webpackDevMiddleware(compiler, {
-    publicPath: '/__build__/', // 绑定中间件的公共路径
-    stats: { //  用于形成统计信息的选项
+    publicPath: '/__build__/',
+    stats: {
       colors: true,
       chunks: false,
     },
@@ -36,8 +27,6 @@ app.use(
 app.use(webpackHotMiddleware(compiler));
 
 app.use(
-  // 提供对静态资源文件(图片、csss文件、javascript文件)的服务
-  // 传递一个包含静态资源的目录给 express.static 中间件用于立刻开始提供文件
   express.static(__dirname, {
     setHeaders(res) {
       res.cookie('XSRF-TOKEN-D', '1234abc');
@@ -45,9 +34,9 @@ app.use(
   }),
 );
 
-app.use(bodyParser.json()); // 解析JSON格式
+app.use(bodyParser.json());
 // app.use(bodyParser.text())
-app.use(bodyParser.urlencoded({ extended: true })); // 解析文本格式
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(
