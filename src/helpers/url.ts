@@ -74,6 +74,18 @@ export function buildURL(
   return url;
 }
 
+// 判断是否为绝对地址 URL
+export function isAbsoluteURL(url: string): boolean {
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+}
+
+// URL地址拼接
+export function combineURL(baseURL: string, relativeURL?: string): string {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+}
+
 // 判断是否为同一域名
 // 创建一个 a 标签的 DOM，设置 href 属性为传入的 URL，获取 DOM 的 protocol、host
 // 通过对比当前页面 url 和请求 url 它们的  protocol、host 是否相同
