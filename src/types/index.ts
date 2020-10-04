@@ -82,6 +82,7 @@ export interface Axios {
   put<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
   // PATCH方法用于对资源应用部分修改
   patch<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
+  getUri(config?: AxiosRequestConfig): string;
 }
 
 // 混合类型的接口，继承于 Axios
@@ -91,6 +92,10 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>;
 }
 
+export interface AxiosClassStatic {
+  new (config: AxiosRequestConfig): Axios;
+}
+
 export interface AxiosStatic extends AxiosInstance {
   // 接受一个 AxiosRequestConfig 类型的配置，作为默认配置的扩展，也可以接受不传参数
   create(config?: AxiosRequestConfig): AxiosInstance;
@@ -98,6 +103,9 @@ export interface AxiosStatic extends AxiosInstance {
   CancelToken: CancelTokenStatic;
   Cancel: CancelStatic;
   isCancel: (value: any) => boolean;
+  all<T>(promises: Array<T | Promise<T>>): Promise<T[]>;
+  spread<T, R>(callback: (...args: T[]) => R): (arr: T[]) => R;
+  Axios: AxiosClassStatic;
 }
 
 // 定义拦截器 AxiosInterceptorManager 泛型接口
