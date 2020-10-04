@@ -3,6 +3,7 @@ import { createError } from '../helpers/error';
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types/index';
 import { isURLSameOrigin } from '../helpers/url';
 import cookie from '../helpers/cookie';
+import { isFormData } from '../helpers/util';
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       withCredentials,
       xsrfCookieName,
       xsrfHeaderName,
+      onDownloadProgress,
+      onUploadProgress,
     } = config;
     // 初始化一个 XMLHttpRequest 实例对象
     const request = new XMLHttpRequest();
@@ -79,6 +82,18 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request),
       );
     };
+
+    if (onDownloadProgress) {
+      request.onprogress = onDownloadProgress;
+    }
+
+    if (onUploadProgress) {
+      request.upload.onprogress = onUploadProgress;
+    }
+
+    if (isFormData(data)) {
+      delete headers['Content-Type'];
+    }
 
     if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
       const xsrfValue = cookie.read(xsrfCookieName);

@@ -30,6 +30,8 @@ export interface AxiosRequestConfig {
   withCredentials?: boolean; // 用于指定跨域 Access-Control 请求是否应当带有授权信息
   xsrfCookieName?: string; // 存储 token 的 cookie 名称
   xsrfHeaderName?: string; // 请求 headers 中 token 对的 headers 名称
+  onDownloadProgress?: (e: ProgressEvent) => void; // 对下载进度进行监控
+  onUploadProgress?: (e: ProgressEvent) => void; // 对上传进度进行监控
 
   [propName: string]: any;
 }
