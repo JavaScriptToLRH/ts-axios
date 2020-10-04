@@ -1,5 +1,10 @@
 import { isDate, isPlainObject } from './util';
 
+interface URLOrigin {
+  protocol: string;
+  host: string;
+}
+
 // 特殊字符处理
 function encode(val: string): string {
   return encodeURIComponent(val)
@@ -54,4 +59,23 @@ export function buildURL(url: string, params?: any): string {
   }
 
   return url;
+}
+
+// 判断是否为同一域名
+// 创建一个 a 标签的 DOM，设置 href 属性为传入的 URL，获取 DOM 的 protocol、host
+// 通过对比当前页面 url 和请求 url 它们的  protocol、host 是否相同
+export function isURLSameOrigin(requestURL: string): boolean {
+  const parsedOrigin = resolveURL(requestURL);
+  return (
+    parsedOrigin.protocol === currentOrigin.protocol && parsedOrigin.host === currentOrigin.host
+  );
+}
+
+const urlParsingNode = document.createElement('a');
+const currentOrigin = resolveURL(window.location.href);
+
+function resolveURL(url: string): URLOrigin {
+  urlParsingNode.setAttribute('href', url);
+  const { protocol, host } = urlParsingNode;
+  return { protocol, host };
 }
